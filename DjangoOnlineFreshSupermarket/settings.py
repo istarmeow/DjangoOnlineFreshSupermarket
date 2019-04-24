@@ -31,10 +31,12 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'users.UserProfile'  # 使用自定义的models做认证
 
+AUTHENTICATION_BACKENDS = ('users.views.CustomBackend',)  # 指定认证后台
+
 # Application definition
 
 INSTALLED_APPS = [
-    # 'simpleui',  # 第三方后台
+    # 'simpleui',  # 第三方后台，使用https://github.com/newpanjing/simpleui
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 添加drf应用
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     # Django跨域解决
     'corsheaders',
@@ -54,8 +57,6 @@ INSTALLED_APPS = [
     'goods.apps.GoodsConfig',
     'trade.apps.TradeConfig',
     'user_operation.apps.UserOperationConfig',
-    # 使用https://github.com/newpanjing/simpleui
-
 ]
 
 MIDDLEWARE = [
@@ -158,7 +159,13 @@ CKEDITOR_UPLOAD_PATH = 'upload/'
 # DRF配置
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 5
+    # 'PAGE_SIZE': 5,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # 上面两个用于DRF基本验证
+        # 'rest_framework.authentication.TokenAuthentication',  # TokenAuthentication，取消全局token，放在视图中进行
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # djangorestframework_simplejwt JWT认证
+    )
 }
 
 # 跨域CORS设置
@@ -167,3 +174,11 @@ CORS_ORIGIN_WHITELIST = (  # 配置允许访问的白名单
     'localhost:8080',
     '127.0.0.1:8080',
 )
+
+# JWT自定义配置
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 配置过期时间
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
+}

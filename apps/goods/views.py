@@ -2,6 +2,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets, filters
+from rest_framework.authentication import TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Goods, GoodsCategory
 from .serializers import GoodsSerializer, CategorySerializer, ParentCategorySerializer
@@ -33,6 +34,7 @@ class GoodsListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = GoodsPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)  # 将过滤器后端添加到单个视图或视图集
     filterset_class = GoodsFilter
+    # authentication_classes = (TokenAuthentication, )  # 只在本视图中验证Token
     search_fields = ('name', 'goods_desc', 'category__name')  # 搜索字段
     ordering_fields = ('click_num', 'sold_num', 'shop_price')  # 排序
 
