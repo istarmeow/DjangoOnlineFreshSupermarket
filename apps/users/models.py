@@ -8,7 +8,7 @@ class UserProfile(AbstractUser):
     """
     name = models.CharField(max_length=30, blank=True, null=True, verbose_name='姓名', help_text='姓名')
     birthday = models.DateField(null=True, blank=True, verbose_name='出生年月', help_text='出生年月')
-    mobile = models.CharField(max_length=11, verbose_name='电话', help_text='电话')
+    mobile = models.CharField(max_length=11, blank=True, null=True, verbose_name='电话', help_text='电话')
     gender = models.CharField(max_length=6, choices=(('male', '男'), ('female', '女')), default='male', verbose_name='性别', help_text='性别')
 
     class Meta:

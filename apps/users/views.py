@@ -5,7 +5,7 @@ from random import choice
 from django.contrib.auth.backends import ModelBackend
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-from .serializers import VerifyCodeSerializer
+from .serializers import VerifyCodeSerializer, UserRegisterSerializer
 from utils.user_op import send_sms
 from .models import VerifyCode
 
@@ -68,3 +68,15 @@ class SendSmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 'mobile': mobile
             }, status=status.HTTP_201_CREATED)  # 可以创建成功代码为201
 
+        # 以下就不需要了
+        # self.perform_create(serializer)
+        # headers = self.get_success_headers(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UserRegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """
+    创建用户
+    """
+    serializer_class = UserRegisterSerializer
+    queryset = User.objects.all()
