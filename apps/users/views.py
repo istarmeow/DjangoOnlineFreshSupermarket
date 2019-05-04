@@ -5,6 +5,7 @@ from random import choice
 from django.contrib.auth.backends import ModelBackend
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import VerifyCodeSerializer, UserRegisterSerializer
 from utils.user_op import send_sms
 from .models import VerifyCode
@@ -80,3 +81,25 @@ class UserRegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     serializer_class = UserRegisterSerializer
     queryset = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+
+        # 添加自己的逻辑，生成token并返回
+        refresh = RefreshToken.for_user(user)
+        tokens_for_user = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            # 数据定制化
+            'username': user.username,  # 由于前端也需要传入username，需要将其加上。cookie.setCookie('name', response.data.username, 7);
+        }
+
+        headers = self.get_success_headers(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # 在返回的时候就直接返回tokens_for_user
+        return Response(tokens_for_user, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
