@@ -23,7 +23,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from rest_framework_simplejwt import views as simplejwt_views  # 引入simplejwt
 from goods.views import GoodsListView, GoodsListViewSet, CategoryViewSet, ParentCategoryViewSet
-from users.views import SendSmsCodeViewSet, UserRegisterViewSet
+from users.views import SendSmsCodeViewSet, UserViewSet
+from user_operation.views import UserFavViewSet
 
 # 创建一个路由器并注册我们的视图集
 router = DefaultRouter()
@@ -31,7 +32,8 @@ router.register(r'goods', GoodsListViewSet, base_name='goods')  # 配置goods的
 router.register(r'categories', CategoryViewSet, base_name='categories')  # 配置分类的url
 router.register(r'parent_categories', ParentCategoryViewSet, base_name='parent_categories')  # 配置分类的url
 router.register(r'code', SendSmsCodeViewSet, base_name='code')  # 发送短信验证码
-router.register(r'register', UserRegisterViewSet, base_name='register')  # 用户注册
+router.register(r'users', UserViewSet, base_name='users')  # 用户注册
+router.register(r'userfavs', UserFavViewSet, base_name='userfavs')  # 用户收藏商品
 
 urlpatterns = [
     path('admin/', admin.site.urls),

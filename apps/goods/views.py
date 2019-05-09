@@ -1,3 +1,4 @@
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
@@ -11,7 +12,9 @@ from .filters import GoodsFilter
 
 class GoodsPagination(PageNumberPagination):
     page_size = 12  # 每一页个数，由于前段
+    page_query_description = _('使用分页后的页码')  # 分页文档中文描述
     page_size_query_param = 'page_size'
+    page_size_query_description = _('每页返回的结果数')
     page_query_param = 'page'  # 参数?p=xx，将其修改为page，适应前端，也方便识别
     max_page_size = 36  # 最大指定每页个数
 
@@ -25,9 +28,13 @@ class GoodsListView(generics.ListAPIView):
     pagination_class = GoodsPagination
 
 
-class GoodsListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class GoodsListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,  viewsets.GenericViewSet):
     """
-    显示商品列表，分页、过滤、搜索、排序
+    list:
+        显示商品列表，分页、过滤、搜索、排序
+
+    retrieve:
+        显示商品详情
     """
     queryset = Goods.objects.all()  # 使用get_queryset函数，依赖queryset的值
     serializer_class = GoodsSerializer
@@ -44,6 +51,9 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     """
     list:
         商品分类列表
+
+    retrieve:
+        商品分类详情
     """
     # queryset = GoodsCategory.objects.all()  # 取出所有分类，没必要分页，因为分类数据量不大
     queryset = GoodsCategory.objects.filter(category_type=1)  # 只获取一级分类数据
@@ -54,6 +64,9 @@ class ParentCategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, vi
     """
     list:
         根据子类别查询父类别
+
+    retrieve:
+        根据子类别查询父类别详情
     """
     queryset = GoodsCategory.objects.all()
     serializer_class = ParentCategorySerializer

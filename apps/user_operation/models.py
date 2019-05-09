@@ -10,14 +10,15 @@ class UserFav(models.Model):
     用户收藏
     """
     user = models.ForeignKey(User, verbose_name='用户', help_text='用户', on_delete=models.CASCADE, related_name='favs')
-    goods = models.ForeignKey(Goods, on_delete=models.CASCADE, verbose_name='商品', help_text='商品')
+    goods = models.ForeignKey(Goods, on_delete=models.CASCADE, verbose_name='商品', help_text='商品', related_name='favs')
     add_time = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
 
     class Meta:
         verbose_name_plural = verbose_name = '用户收藏'
+        unique_together = ['user', 'goods']
 
     def __str__(self):
-        return self.user.name
+        return "{} 收藏 {}".format(self.user.name if self.user.name else self.user.username, self.goods.name)
 
 
 class UserLeavingMessage(models.Model):

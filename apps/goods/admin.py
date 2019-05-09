@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GoodsCategory, Goods
+from .models import GoodsCategory, Goods, GoodsImage
 from django.apps import apps
 
 
@@ -10,6 +10,18 @@ class GoodsCategoryAdmin(admin.ModelAdmin):
     list_editable = ('is_tab',)  # 列表页可编辑
     list_filter = ('category_type',)  # 列表页可筛选
     search_fields = ('name', 'desc')  # 列表页可搜索
+
+
+class GoodsImageInline(admin.TabularInline):
+    model = GoodsImage
+
+
+@admin.register(Goods)
+class GoodsAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    inlines = [
+        GoodsImageInline
+    ]
 
 
 all_models = apps.get_app_config('goods').get_models()

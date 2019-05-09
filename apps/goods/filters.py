@@ -7,11 +7,11 @@ class GoodsFilter(filters.FilterSet):
     """
     商品的过滤类
     """
-    name = filters.CharFilter(field_name='name', lookup_expr='contains')  # 包含关系，模糊匹配
-    goods_desc = filters.CharFilter(field_name='name', lookup_expr='contains')
-    min_price = filters.NumberFilter(field_name="shop_price", lookup_expr='gte')  # 自定义字段
-    max_price = filters.NumberFilter(field_name="shop_price", lookup_expr='lte')
-    top_category = filters.NumberFilter(method='top_category_filter', field_name='category_id', lookup_expr='=')  # 自定义过滤，过滤某个一级分类
+    name = filters.CharFilter(field_name='name', lookup_expr='contains', help_text='分类名模糊匹配')  # 包含关系，模糊匹配
+    goods_desc = filters.CharFilter(field_name='name', lookup_expr='contains', help_text='商品描述模糊匹配')
+    min_price = filters.NumberFilter(field_name="shop_price", lookup_expr='gte', help_text='最低价格')  # 自定义字段
+    max_price = filters.NumberFilter(field_name="shop_price", lookup_expr='lte', help_text='最高价格')
+    top_category = filters.NumberFilter(method='top_category_filter', field_name='category_id', lookup_expr='=', help_text='自定义过滤某个一级分类')  # 自定义过滤，过滤某个一级分类
 
     def top_category_filter(self, queryset, field_name, value):
         """
@@ -27,4 +27,4 @@ class GoodsFilter(filters.FilterSet):
 
     class Meta:
         model = Goods
-        fields = ['name', 'goods_desc', 'min_price', 'max_price']
+        fields = ['name', 'goods_desc', 'min_price', 'max_price', 'is_hot']

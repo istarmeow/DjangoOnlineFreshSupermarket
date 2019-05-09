@@ -158,13 +158,13 @@ CKEDITOR_UPLOAD_PATH = 'upload/'
 
 # DRF配置
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # 上面两个用于DRF基本验证
         # 'rest_framework.authentication.TokenAuthentication',  # TokenAuthentication，取消全局token，放在视图中进行
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # djangorestframework_simplejwt JWT认证
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # djangorestframework_simplejwt JWT认证
     )
 }
 

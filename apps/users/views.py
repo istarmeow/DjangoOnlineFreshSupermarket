@@ -6,7 +6,7 @@ from django.contrib.auth.backends import ModelBackend
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import VerifyCodeSerializer, UserRegisterSerializer
+from .serializers import VerifyCodeSerializer, UserSerializer
 from utils.user_op import send_sms
 from .models import VerifyCode
 
@@ -75,11 +75,11 @@ class SendSmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UserRegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     创建用户
     """
-    serializer_class = UserRegisterSerializer
+    serializer_class = UserSerializer
     queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):

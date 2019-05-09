@@ -40,7 +40,7 @@ class VerifyCodeSerializer(serializers.Serializer):
         return mobile
 
 
-class UserRegisterSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     code = serializers.CharField(required=True,
                                  min_length=4,
                                  max_length=4,
