@@ -110,3 +110,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'mobile', 'code', 'password')  # username是Django自带的字段，与mobile的值保持一致
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """
+    用户详情序列化类
+    """
+
+    class Meta:
+        model = User
+        fields = ('username', 'name', 'birthday', 'mobile', 'gender')
