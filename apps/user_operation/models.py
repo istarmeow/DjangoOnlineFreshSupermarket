@@ -43,7 +43,7 @@ class UserLeavingMessage(models.Model):
         verbose_name_plural = verbose_name = '用户留言'
 
     def __str__(self):
-        return '{} {}:{}'.format(self.user.name, self.get_message_type_display(), self.subject)
+        return '{} {}:{}'.format(self.user.name if self.user.name else self.user.username, self.get_message_type_display(), self.subject)
 
 
 class UserAddress(models.Model):
@@ -51,6 +51,8 @@ class UserAddress(models.Model):
     用户收货地址
     """
     user = models.ForeignKey(User, verbose_name='用户', help_text='用户', on_delete=models.CASCADE, related_name='addresses')
+    province = models.CharField(max_length=100, default='', verbose_name='省份', help_text='省份')
+    city = models.CharField(max_length=100, default='', verbose_name='城市', help_text='城市')
     district = models.CharField(max_length=100, default='', verbose_name='区域', help_text='区域')
     address = models.CharField(max_length=200, default='', verbose_name='收货地址', help_text='收货地址')
     signer_name = models.CharField(max_length=20, default='', verbose_name='签收人', help_text='签收人')

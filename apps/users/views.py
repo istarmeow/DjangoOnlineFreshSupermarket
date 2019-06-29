@@ -78,7 +78,7 @@ class SendSmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """
     create:
         创建用户
