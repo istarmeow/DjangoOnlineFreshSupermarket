@@ -25,6 +25,7 @@ from rest_framework_simplejwt import views as simplejwt_views  # 引入simplejwt
 from goods.views import GoodsListView, GoodsListViewSet, CategoryViewSet, ParentCategoryViewSet
 from users.views import SendSmsCodeViewSet, UserViewSet
 from user_operation.views import UserFavViewSet, UserLeavingMessageViewSet, AddressViewSet
+from trade.views import ShoppingCartViewSet, OrderInfoViewSet
 
 # 创建一个路由器并注册我们的视图集
 router = DefaultRouter()
@@ -36,6 +37,10 @@ router.register(r'users', UserViewSet, base_name='users')  # 用户注册
 router.register(r'userfavs', UserFavViewSet, base_name='userfavs')  # 用户收藏商品
 router.register(r'livingmsgs', UserLeavingMessageViewSet, base_name='livingmsgs')  # 用户留言
 router.register(r'address', AddressViewSet, base_name='address')  # 用户收货地址
+router.register(r'shoppingcart', ShoppingCartViewSet, base_name='shoppingcart')  # 购物车
+router.register(r'orderinfo', OrderInfoViewSet, base_name='orderinfo')  # 订单管理
+
+from trade.views import AliPayView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -50,6 +55,9 @@ urlpatterns = [
 
     # DRF文档
     path('docs/', include_docs_urls(title='DRF文档')),
+
+    # 支付宝通知接口
+    path('alipay/return/', AliPayView.as_view(), name='alipay')
 ]
 
 # 上传的文件能直接通过url打开

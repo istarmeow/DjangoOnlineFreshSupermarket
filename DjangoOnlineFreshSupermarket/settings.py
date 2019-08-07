@@ -27,7 +27,8 @@ SECRET_KEY = '+0jtduy*crf@8%!m3plwm!x@dnna0-&%04hmy&#y$rk0*u7az5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'users.UserProfile'  # 使用自定义的models做认证
 
@@ -92,7 +93,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'DjangoOnlineFreshSupermarket.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -102,7 +102,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -121,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -142,12 +140,10 @@ USE_L10N = True
 # 数据库存储使用时间，True时间会被存为UTC的时间
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
 
 # 配置媒体文件
 MEDIA_URL = '/media/'
@@ -182,3 +178,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 配置过期时间
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
+
+app_id = "2016100900646609"
+app_private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_key_2048.txt')
+alipay_public_key_path = os.path.join(BASE_DIR, "apps/trade/keys/alipay_key_2048.txt")
