@@ -72,7 +72,7 @@ class AliPay(object):
             "biz_content": biz_content
         }
 
-        if return_url is not None:
+        if return_url is None:
             data["notify_url"] = self.notify_url
             data["return_url"] = self.return_url
 

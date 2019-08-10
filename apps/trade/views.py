@@ -84,8 +84,9 @@ class OrderInfoViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Re
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.alipay import AliPay, get_server_ip
-from DjangoOnlineFreshSupermarket.settings import app_id, alipay_public_key_path, app_private_key_path
+from DjangoOnlineFreshSupermarket.settings import app_id, alipay_debug, alipay_public_key_path, app_private_key_path
 from django.utils import timezone
+from django.shortcuts import redirect, reverse
 
 
 class AliPayView(APIView):
@@ -108,24 +109,24 @@ class AliPayView(APIView):
             notify_url="http://{}:8000/alipay/return/".format(server_ip),
             app_private_key_path=app_private_key_path,  # 可以使用相对路径那个
             alipay_public_key_path=alipay_public_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
-            debug=True,  # 默认False,
+            debug=alipay_debug,  # 默认False,
             return_url="http://{}:8000/alipay/return/".format(server_ip)
         )
 
         verify_result = alipay.verify(processed_dict, sign)  # 验证签名，如果成功返回True
         if verify_result:
-            order_sn = processed_dict.get('out_trade_no')  # 原支付请求的商户订单号
-            trade_no = processed_dict.get('trade_no')  # 支付宝交易凭证号
-            trade_status = processed_dict.get('trade_status')  # 交易目前所处的状态
+            # POST中已经修改数据库订单状态，无需再GET中修改，且，GET中也得不到支付状态值
 
-            # 更新数据库订单状态
-            OrderInfo.objects.filter(order_sn=order_sn).update(
-                trade_no=trade_no,  # 更改交易号
-                pay_status=trade_status,  # 更改支付状态
-                pay_time=timezone.now()  # 更改支付时间
-            )
             # 给支付宝返回一个消息，证明已收到异步通知
-            return Response('success')
+            # return Response('success')
+            # 修改为跳转到Vue页面
+            response = redirect(reverse('index'))
+            response.set_cookie('nextPath', 'pay', max_age=2)  # max_age设置为2s，让其快速过期，用一次就好了。
+            # 跳转回Vue中时，直接跳转到Vue的pay的页面，后台无法配置，只能让Vue实现跳转。
+            return response
+        else:
+            # 验证不通过直接跳转回首页就行，不设置cookie
+            return redirect(reverse('index'))
 
     def post(self, request):
         """
@@ -146,7 +147,7 @@ class AliPayView(APIView):
             notify_url="http://{}:8000/alipay/return/".format(server_ip),
             app_private_key_path=app_private_key_path,  # 可以使用相对路径那个
             alipay_public_key_path=alipay_public_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
-            debug=True,  # 默认False,
+            debug=alipay_debug,  # 默认False,
             return_url="http://{}:8000/alipay/return/".format(server_ip)
         )
 

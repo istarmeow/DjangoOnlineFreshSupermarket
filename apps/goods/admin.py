@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GoodsCategory, Goods, GoodsImage
+from .models import GoodsCategory, Goods, GoodsImage, IndexCategoryAd
 from django.apps import apps
 
 
@@ -22,6 +22,17 @@ class GoodsAdmin(admin.ModelAdmin):
     inlines = [
         GoodsImageInline
     ]
+
+
+@admin.register(IndexCategoryAd)
+class IndexCategoryAdAdmin(admin.ModelAdmin):
+    list_display = ['category', 'goods']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'category':
+            # 外键下拉框添加过滤
+            kwargs['queryset'] = GoodsCategory.objects.filter(category_type=1)
+        return super(IndexCategoryAdAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 all_models = apps.get_app_config('goods').get_models()

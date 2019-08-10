@@ -5,8 +5,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets, filters
 from rest_framework.authentication import TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Goods, GoodsCategory
-from .serializers import GoodsSerializer, CategorySerializer, ParentCategorySerializer
+from .models import Goods, GoodsCategory, Banner
+from .serializers import GoodsSerializer, CategorySerializer, ParentCategorySerializer, BannerSerializer, IndexCategoryGoodsSerializer
 from .filters import GoodsFilter
 
 
@@ -28,7 +28,7 @@ class GoodsListView(generics.ListAPIView):
     pagination_class = GoodsPagination
 
 
-class GoodsListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,  viewsets.GenericViewSet):
+class GoodsListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     list:
         显示商品列表，分页、过滤、搜索、排序
@@ -70,3 +70,30 @@ class ParentCategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, vi
     """
     queryset = GoodsCategory.objects.all()
     serializer_class = ParentCategorySerializer
+
+
+class BannerViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    list:
+        获取轮播图列表
+    """
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+
+
+class IndexCategoryGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    list:
+        首页分类、商品数据
+    """
+    queryset = GoodsCategory.objects.filter(category_type=1)
+    serializer_class = IndexCategoryGoodsSerializer
+
+    def get_queryset(self):
+        # 随机取出几个分类
+        import random
+        category_id_list = self.queryset.values_list('id', flat=True)
+        selected_ids = random.sample(list(category_id_list), 3)
+        qs = self.queryset.filter(id__in=selected_ids)
+        return qs
+

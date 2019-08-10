@@ -2,6 +2,8 @@ from rest_framework import serializers
 from goods.models import Goods
 from trade.models import ShoppingCart, OrderInfo, OrderGoods
 from goods.serializers import GoodsSerializer
+from utils.alipay import AliPay, get_server_ip
+from DjangoOnlineFreshSupermarket.settings import app_id, alipay_debug, alipay_public_key_path, app_private_key_path
 
 
 class ShoppingCartListSerializer(serializers.ModelSerializer):
@@ -53,6 +55,7 @@ class OrderInfoSerializer(serializers.ModelSerializer):
     trade_no = serializers.CharField(read_only=True)  # 只读
     pay_status = serializers.CharField(read_only=True)  # 只读
     pay_time = serializers.DateTimeField(read_only=True)  # 只读
+    alipay_url = serializers.SerializerMethodField()  # 生成支付宝url
 
     def generate_order_sn(self):
         # 当前时间+userid+随机数
@@ -65,6 +68,29 @@ class OrderInfoSerializer(serializers.ModelSerializer):
         # 数据验证成功后，生成一个订单号
         attrs['order_sn'] = self.generate_order_sn()
         return attrs
+
+    def get_alipay_url(self, obj):
+        # 方法命名规则为：get_<field_name>
+        server_ip = get_server_ip()
+        alipay = AliPay(
+            app_id=app_id,  # 自己支付宝沙箱 APP ID
+            notify_url="http://{}:8000/alipay/return/".format(server_ip),
+            app_private_key_path=app_private_key_path,  # 可以使用相对路径那个
+            alipay_public_key_path=alipay_public_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+            debug=alipay_debug,  # 默认False,
+            return_url="http://{}:8000/alipay/return/".format(server_ip)
+        )
+        # 创建订单
+        order_sn = obj.order_sn
+        order_amount = obj.order_amount
+        url = alipay.direct_pay(
+            subject="生鲜超市-{}".format(order_sn),
+            out_trade_no=order_sn,
+            total_amount=order_amount,
+            # return_url="http://{}:8000/alipay/return/".format(server_ip)  # 支付完成后自动跳回该url，可以不填了，因为初始化已经加上了
+        )
+        re_url = "https://openapi.alipaydev.com/gateway.do?{data}".format(data=url)
+        return re_url
 
     class Meta:
         model = OrderInfo
@@ -83,6 +109,30 @@ class OrderGoodsSerializer(serializers.ModelSerializer):
 # 订单详情序列化
 class OrderInfoDetailSerializer(serializers.ModelSerializer):
     order_goods = OrderGoodsSerializer(many=True)  # 为OrderGoods中外键关联名称
+    alipay_url = serializers.SerializerMethodField()  # 生成支付宝url
+
+    def get_alipay_url(self, obj):
+        # 方法命名规则为：get_<field_name>
+        server_ip = get_server_ip()
+        alipay = AliPay(
+            app_id=app_id,  # 自己支付宝沙箱 APP ID
+            notify_url="http://{}:8000/alipay/return/".format(server_ip),
+            app_private_key_path=app_private_key_path,  # 可以使用相对路径那个
+            alipay_public_key_path=alipay_public_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+            debug=alipay_debug,  # 默认False,
+            return_url="http://{}:8000/alipay/return/".format(server_ip)
+        )
+        # 创建订单
+        order_sn = obj.order_sn
+        order_amount = obj.order_amount
+        url = alipay.direct_pay(
+            subject="生鲜超市-{}".format(order_sn),
+            out_trade_no=order_sn,
+            total_amount=order_amount,
+            # return_url="http://{}:8000/alipay/return/".format(server_ip)  # 支付完成后自动跳回该url，可以不填了，因为初始化已经加上了
+        )
+        re_url = "https://openapi.alipaydev.com/gateway.do?{data}".format(data=url)
+        return re_url
 
     class Meta:
         model = OrderInfo

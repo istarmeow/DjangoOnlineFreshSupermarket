@@ -22,7 +22,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from rest_framework_simplejwt import views as simplejwt_views  # 引入simplejwt
-from goods.views import GoodsListView, GoodsListViewSet, CategoryViewSet, ParentCategoryViewSet
+from goods.views import GoodsListView, GoodsListViewSet, CategoryViewSet, ParentCategoryViewSet, BannerViewSet, IndexCategoryGoodsViewSet
 from users.views import SendSmsCodeViewSet, UserViewSet
 from user_operation.views import UserFavViewSet, UserLeavingMessageViewSet, AddressViewSet
 from trade.views import ShoppingCartViewSet, OrderInfoViewSet
@@ -39,8 +39,11 @@ router.register(r'livingmsgs', UserLeavingMessageViewSet, base_name='livingmsgs'
 router.register(r'address', AddressViewSet, base_name='address')  # 用户收货地址
 router.register(r'shoppingcart', ShoppingCartViewSet, base_name='shoppingcart')  # 购物车
 router.register(r'orderinfo', OrderInfoViewSet, base_name='orderinfo')  # 订单管理
+router.register(r'banners', BannerViewSet, base_name='banners')  # 首页轮播图
+router.register(r'indexgoods', IndexCategoryGoodsViewSet, base_name='indexgoods')  # 首页分类及商品
 
 from trade.views import AliPayView
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -57,7 +60,10 @@ urlpatterns = [
     path('docs/', include_docs_urls(title='DRF文档')),
 
     # 支付宝通知接口
-    path('alipay/return/', AliPayView.as_view(), name='alipay')
+    path('alipay/return/', AliPayView.as_view(), name='alipay'),
+
+    # 使用Django原生的TemplateView渲染index模板
+    path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
 ]
 
 # 上传的文件能直接通过url打开

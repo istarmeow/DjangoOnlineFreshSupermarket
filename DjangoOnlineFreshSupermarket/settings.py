@@ -144,6 +144,10 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+# 配置静态文件
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),  # 逗号不能少
+)
 
 # 配置媒体文件
 MEDIA_URL = '/media/'
@@ -179,6 +183,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
 
+# 支付宝相关配置
 app_id = "2016100900646609"
+alipay_debug = True
 app_private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_key_2048.txt')
 alipay_public_key_path = os.path.join(BASE_DIR, "apps/trade/keys/alipay_key_2048.txt")

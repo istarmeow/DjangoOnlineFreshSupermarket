@@ -41,7 +41,7 @@ class OrderInfo(models.Model):
     user = models.ForeignKey(User, verbose_name='用户', help_text='用户', on_delete=models.CASCADE, related_name='order_infos')
     order_sn = models.CharField(max_length=30, unique=True, blank=True, null=True, verbose_name='订单号', help_text='订单号')
     trade_no = models.CharField(max_length=100, unique=True, null=True, blank=True, verbose_name='支付交易号', help_text='支付交易号')
-    pay_status = models.CharField(choices=ORDER_STATUS, default='topaid', max_length=20, verbose_name='订单状态', help_text='订单状态')
+    pay_status = models.CharField(choices=ORDER_STATUS, default='WAIT_BUYER_PAY', max_length=20, verbose_name='订单状态', help_text='订单状态')
     post_script = models.CharField(max_length=50, blank=True, null=True, verbose_name='订单留言', help_text='订单留言')
     order_amount = models.FloatField(default=0.0, verbose_name='订单金额', help_text='订单金额')
     pay_time = models.DateTimeField(null=True, blank=True, verbose_name='支付时间', help_text='支付时间')
@@ -54,6 +54,7 @@ class OrderInfo(models.Model):
 
     class Meta:
         verbose_name_plural = verbose_name = '订单'
+        ordering = ['-add_time']
 
     def __str__(self):
         return "{}".format(self.order_sn)

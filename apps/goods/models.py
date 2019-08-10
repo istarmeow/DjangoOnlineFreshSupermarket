@@ -31,7 +31,7 @@ class GoodsCategoryBrand(models.Model):
     """
     品牌
     """
-    category = models.ForeignKey(GoodsCategory, null=True, blank=True, on_delete=models.CASCADE, verbose_name='商品类别', help_text='商品类别')
+    category = models.ForeignKey(GoodsCategory, null=True, blank=True, on_delete=models.CASCADE, verbose_name='商品类别', help_text='商品类别', related_name='brands')
     name = models.CharField(max_length=30, default='', verbose_name='品牌名称', help_text='品牌名称')
     desc = models.TextField(default='', max_length=200, verbose_name='品牌描述', help_text='品牌描述')
     image = models.ImageField(max_length=200, upload_to='brand/images/', verbose_name='品牌图片', help_text='品牌图片')
@@ -48,7 +48,7 @@ class Goods(models.Model):
     """
     商品
     """
-    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品类别', help_text='商品类别')
+    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品类别', help_text='商品类别', related_name='goods')
     goods_sn = models.CharField(max_length=100, default='', verbose_name='商品编码', help_text='商品唯一货号')
     name = models.CharField(max_length=300, verbose_name='商品名称', help_text='商品名称')
     click_num = models.IntegerField(default=0, verbose_name='点击数', help_text='点击数')
@@ -101,3 +101,18 @@ class Banner(models.Model):
 
     def __str__(self):
         return self.goods.name
+
+
+class IndexCategoryAd(models.Model):
+    """
+    首页广告
+    """
+    category = models.ForeignKey(GoodsCategory, null=True, blank=True, on_delete=models.CASCADE, verbose_name='商品类别', help_text='商品类别', related_name='ads')
+    goods = models.ForeignKey(Goods, verbose_name='商品', help_text='商品', on_delete=models.CASCADE, related_name='ads')
+    add_time = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
+
+    class Meta:
+        verbose_name_plural = verbose_name = '首页类别广告'
+
+    def __str__(self):
+        return '{}：{}'.format(self.category.name, self.goods.name)
