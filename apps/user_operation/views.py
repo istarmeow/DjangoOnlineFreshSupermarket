@@ -42,6 +42,29 @@ class UserFavViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.L
         # 过滤当前用户的收藏记录
         return self.queryset.filter(user=self.request.user)
 
+    """
+    # 使用信号实现，该处代码不需要了
+    def perform_create(self, serializer):
+        # 添加收藏商品，商品收藏数+1
+        # 序列化保存，然后将它赋值给一个实例，也就是UserFav(models.Model)对象
+        instance = serializer.save()
+        # 获取其中的商品
+        goods = instance.goods
+        # 商品收藏数+1
+        goods.fav_num += 1
+        goods.save()
+
+    def perform_destroy(self, instance):
+        # 删除收藏商品，商品收藏数-1
+        goods = instance.goods
+        # 商品收藏数-1
+        goods.fav_num -= 1
+        if goods.fav_num < 0:
+            goods.fav_num = 0
+        goods.save()
+        instance.delete()
+    """
+
 
 class UserLeavingMessageViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """

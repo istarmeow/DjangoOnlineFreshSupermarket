@@ -3,11 +3,14 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Goods, GoodsCategory, Banner
 from .serializers import GoodsSerializer, CategorySerializer, ParentCategorySerializer, BannerSerializer, IndexCategoryGoodsSerializer
 from .filters import GoodsFilter
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
 
 class GoodsPagination(PageNumberPagination):
@@ -28,7 +31,7 @@ class GoodsListView(generics.ListAPIView):
     pagination_class = GoodsPagination
 
 
-class GoodsListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class GoodsListViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     list:
         显示商品列表，分页、过滤、搜索、排序
@@ -44,6 +47,16 @@ class GoodsListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewset
     # authentication_classes = (TokenAuthentication, )  # 只在本视图中验证Token
     search_fields = ('name', 'goods_desc', 'category__name')  # 搜索字段
     ordering_fields = ('click_num', 'sold_num', 'shop_price')  # 排序
+    # throttle_classes = [UserRateThrottle, AnonRateThrottle]  # DRF默认限速类，可以仿照写自己的限速类
+    throttle_scope = 'goods_list'
+
+    def retrieve(self, request, *args, **kwargs):
+        # 增加点击数
+        instance = self.get_object()
+        instance.click_num += 1
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class CategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

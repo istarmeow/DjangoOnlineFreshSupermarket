@@ -38,6 +38,33 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
         # 只能显示当前用户的购物车列表
         return self.queryset.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        # 添加到购物车，库存数减少
+        shop_cart = serializer.save()
+        goods = shop_cart.goods
+        # 商品的库存量goods_num，减去购物车中的数量
+        goods.goods_num -= shop_cart.nums
+        goods.save()
+
+    def perform_destroy(self, instance):
+        # 从购物车中删除，库存量减少
+        goods = instance.goods
+        # 商品的库存量goods_num，加上删除的数量
+        goods.goods_num += instance.nums
+        goods.save()
+        instance.delete()
+
+    def perform_update(self, serializer):
+        # 更新购物车中数量，先获取原来的数量，再进行更新
+        cart_goods = serializer.instance
+        old_cart_goods_num = cart_goods.nums  # 获取购物车中该商品原来的数量
+        update_cart_goods = serializer.save()
+        diff_nums = update_cart_goods.nums - old_cart_goods_num  # 现在的数量减去以前的数量
+        goods = cart_goods.goods
+        # 得到商品对象，更改库存量
+        goods.goods_num -= diff_nums
+        goods.save()
+
 
 class OrderInfoViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """
@@ -54,7 +81,6 @@ class OrderInfoViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Re
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)  # 用户必须登录才能访问
     authentication_classes = (JWTAuthentication, SessionAuthentication)  # 配置登录认证：支持JWT认证和DRF基本认证
     queryset = OrderInfo.objects.all()
-
     # serializer_class = OrderInfoSerializer  # 添加序列化
 
     def get_queryset(self):
@@ -79,6 +105,15 @@ class OrderInfoViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Re
             )
         # 然后清空该用户购物车
         shopping_carts.delete()
+
+    def perform_destroy(self, instance):
+        # 取消（删除）商品库存量增加
+        for order_goods in instance.order_goods.all():
+            goods = order_goods.goods
+            # 获取订单商品的数量，修改库存量
+            goods.goods_num += order_goods.goods_nums
+            goods.save()
+        instance.delete()
 
 
 from rest_framework.views import APIView
@@ -158,11 +193,28 @@ class AliPayView(APIView):
             trade_status = processed_dict.get('trade_status')  # 交易目前所处的状态
 
             # 更新数据库订单状态
+            """
             OrderInfo.objects.filter(order_sn=order_sn).update(
                 trade_no=trade_no,  # 更改交易号
                 pay_status=trade_status,  # 更改支付状态
                 pay_time=timezone.now()  # 更改支付时间
             )
+            """
+            orderinfos = OrderInfo.objects.filter(order_sn=order_sn)
+            for orderinfo in orderinfos:
+                orderinfo.trade_no = trade_no,  # 更改交易号
+                orderinfo.pay_status = trade_status,  # 更改支付状态
+                orderinfo.pay_time = timezone.now()  # 更改支付时间
+                # 更改商品的销量
+                order_goods = orderinfo.order_goods.all()
+                for item in order_goods:
+                    # 获取订单中商品和商品数量，然后将商品的销量进行增加
+                    goods = item.goods
+                    goods.sold_num += item.goods_nums
+                    goods.save()
+
+                orderinfo.save()
+
             # 给支付宝返回一个消息，证明已收到异步通知
             # 当商户收到服务器异步通知并打印出 success 时，服务器异步通知参数 notify_id 才会失效。
             # 也就是说在支付宝发送同一条异步通知时（包含商户并未成功打印出 success 导致支付宝重发数次通知），服务器异步通知参数 notify_id 是不变的。

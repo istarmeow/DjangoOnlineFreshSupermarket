@@ -165,7 +165,18 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  # 上面两个用于DRF基本验证
         # 'rest_framework.authentication.TokenAuthentication',  # TokenAuthentication，取消全局token，放在视图中进行
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # djangorestframework_simplejwt JWT认证
-    )
+    ),
+    # throttle对接口访问限速
+    'DEFAULT_THROTTLE_CLASSES': [
+        # 'rest_framework.throttling.AnonRateThrottle',  # 用户未登录请求限速，通过IP地址判断
+        # 'rest_framework.throttling.UserRateThrottle'  # 用户登陆后请求限速，通过token判断
+        'rest_framework.throttling.ScopedRateThrottle',  # 限制用户对于每个视图的访问频次，使用ip或user id。
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        # 'anon': '60/minute',  # 限制所有匿名未认证用户，使用IP区分用户。使用DEFAULT_THROTTLE_RATES['anon'] 来设置频次
+        # 'user': '200/minute'  # 限制认证用户，使用User id 来区分。使用DEFAULT_THROTTLE_RATES['user'] 来设置频次
+        'goods_list': '600/minute'
+    }
 }
 
 # 跨域CORS设置
@@ -188,3 +199,20 @@ app_id = "2016100900646609"
 alipay_debug = True
 app_private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_key_2048.txt')
 alipay_public_key_path = os.path.join(BASE_DIR, "apps/trade/keys/alipay_key_2048.txt")
+
+# drf-extensions配置
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 10  # 缓存全局过期时间（60 * 10 表示10分钟）
+}
+
+# 配置 django-redis做缓存后端
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "blog.starmeow.cn"  # 如果redis服务器设置了密码，配置成自己的密码
+        }
+    }
+}
