@@ -209,7 +209,7 @@ SIMPLE_JWT = {
 }
 
 # 支付宝相关配置
-app_id = "2016xxxxx46609"
+app_id = "2016100900646609"
 alipay_debug = True
 app_private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_key_2048.txt')
 alipay_public_key_path = os.path.join(BASE_DIR, "apps/trade/keys/alipay_key_2048.txt")
