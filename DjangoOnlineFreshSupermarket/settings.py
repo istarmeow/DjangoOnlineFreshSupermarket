@@ -17,6 +17,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps_extend'))  # 添加扩展应用路径
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -32,7 +33,13 @@ ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'users.UserProfile'  # 使用自定义的models做认证
 
-AUTHENTICATION_BACKENDS = ('users.views.CustomBackend',)  # 指定认证后台
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',  # 自定义认证后端
+    'social_core.backends.weibo.WeiboOAuth2',  # 微博认证后端
+    'social_core.backends.qq.QQOAuth2',  # QQ认证后端
+    'social_core.backends.weixin.WeixinOAuth2',  # 微信认证后端
+    'django.contrib.auth.backends.ModelBackend',  # 使用了`django.contrib.auth`应用程序，支持帐密认证
+)  # 指定认证后台
 
 # Application definition
 
@@ -48,6 +55,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    # 添加Django联合登录
+    'social_django',
     # Django跨域解决
     'corsheaders',
     # 注册富文本编辑器ckeditor
@@ -86,6 +95,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 添加下面2条social_django上下文处理器
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -183,7 +195,9 @@ REST_FRAMEWORK = {
 # CORS_ORIGIN_ALLOW_ALL = False  # 默认为False，如果为True则允许所有连接
 CORS_ORIGIN_WHITELIST = (  # 配置允许访问的白名单
     'localhost:8080',
+    'localhost:8000',
     '127.0.0.1:8080',
+    '127.0.0.1:8000',
 )
 
 # JWT自定义配置
@@ -195,7 +209,7 @@ SIMPLE_JWT = {
 }
 
 # 支付宝相关配置
-app_id = "2016100900646609"
+app_id = "2016xxxxx46609"
 alipay_debug = True
 app_private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_key_2048.txt')
 alipay_public_key_path = os.path.join(BASE_DIR, "apps/trade/keys/alipay_key_2048.txt")
@@ -216,3 +230,14 @@ CACHES = {
         }
     }
 }
+
+# social_django配置OAuth keys，项目上传晚上，将涉密信息保存在配置文件中
+import configparser
+config = configparser.ConfigParser()
+config.read(os.path.join(BASE_DIR, 'ProjectConfig.ini'))
+weibo_key = config['DjangoOnlineFreshSupermarket']['weibo_key']
+weibo_secret = config['DjangoOnlineFreshSupermarket']['weibo_secret']
+SOCIAL_AUTH_WEIBO_KEY = weibo_key
+SOCIAL_AUTH_WEIBO_SECRET = weibo_secret
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/index/'  # 登录成功后跳转，一般为项目首页

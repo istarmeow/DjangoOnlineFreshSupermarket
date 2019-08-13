@@ -1,3 +1,4 @@
+social-auth-app-django
 django-redis
 drf-extensions
 pycryptodome
@@ -5,16 +6,16 @@ certifi==2019.3.9
 chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
-Django==2.2
+Django>=2.2
 django-ckeditor==5.6.1
-django-cors-headers==2.5.2
+django-cors-headers>=2.5.2
 django-crispy-forms==1.7.2
 django-filter==2.1.0
 django-guardian==1.5.0
 django-js-asset==1.2.2
-django-simpleui==2.0.4
-djangorestframework==3.9.2
-djangorestframework-simplejwt==4.3.0
+django-simpleui>=2.0.4
+djangorestframework>=3.9.2
+djangorestframework-simplejwt>=4.3.0
 idna==2.8
 itypes==1.1.0
 Jinja2==2.10.1

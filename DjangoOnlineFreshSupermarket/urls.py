@@ -64,6 +64,9 @@ urlpatterns = [
 
     # 使用Django原生的TemplateView渲染index模板
     path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
+
+    # social_django认证登录
+    path('', include('social_django.urls', namespace='social'))
 ]
 
 # 上传的文件能直接通过url打开
