@@ -1,4 +1,5 @@
 from rest_framework import viewsets, mixins
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -106,3 +107,20 @@ class AddressViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+
+class HotSearchView(APIView):
+    def get(self, request):
+        from utils.hotsearch import HotSearch
+        from django.http import JsonResponse
+        from rest_framework.response import Response
+        from rest_framework import exceptions, status
+        import json
+        hot_search = HotSearch()
+        result = []
+        for keyword in hot_search.get_hotsearch():
+            tmp = dict()
+            tmp['keyword'] = keyword
+            result.append(tmp)
+        # return JsonResponse(result, safe=False)
+        return Response(result, status=status.HTTP_200_OK)

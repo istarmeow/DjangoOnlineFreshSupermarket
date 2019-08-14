@@ -43,6 +43,7 @@ router.register(r'banners', BannerViewSet, base_name='banners')  # 首页轮播�
 router.register(r'indexgoods', IndexCategoryGoodsViewSet, base_name='indexgoods')  # 首页分类及商品
 
 from trade.views import AliPayView
+from user_operation.views import HotSearchView
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -66,7 +67,10 @@ urlpatterns = [
     path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
 
     # social_django认证登录
-    path('', include('social_django.urls', namespace='social'))
+    path('', include('social_django.urls', namespace='social')),
+
+    # 获取热搜
+    path('hotsearchs/', HotSearchView.as_view(), name='hotsearchs')
 ]
 
 # 上传的文件能直接通过url打开

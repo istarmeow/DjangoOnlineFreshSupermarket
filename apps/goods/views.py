@@ -58,6 +58,14 @@ class GoodsListViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.Retriev
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    def get_queryset(self):
+        keyword = self.request.query_params.get('search')
+        if keyword:
+            from utils.hotsearch import HotSearch
+            hot_search = HotSearch()
+            hot_search.save_keyword(keyword)
+        return self.queryset
+
 
 class CategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     # 注释很有用，在drf文档中
@@ -109,4 +117,3 @@ class IndexCategoryGoodsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         selected_ids = random.sample(list(category_id_list), 3)
         qs = self.queryset.filter(id__in=selected_ids)
         return qs
-
