@@ -202,7 +202,7 @@ if __name__ == "__main__":
     print(re_url)
 
     # 支付成功后跳回的页面url
-    return_url = "http://118.25.208.30:8000/?charset=utf-8&out_trade_no=2019080716060003&method=alipay.trade.page.pay.return&total_amount=0.01&sign=Ej1B3IHs4q6aaWXLqwphXelaPcrok%2Ft7FPmFwns368fc6LcDfvLgBFAqsVwryWMJmHddwiiGgDDSkJKl0f30dYyS0mh9HXlbAXacUJgHHRUvsrN9BiJ9GBoLf%2FInKXcC6n7bqkSDORW1Rnn2N1354NieHVW9W67dNhHCN%2FnpVzALX2c%2F5g7z06i1aYIdLVDfUsXVzn2fDGhZ%2BAHYoFoDKMTr0kFuPGSNPnt8%2F0Q75je8%2BbWmF%2BXMOm1152wVHUMyL1LEO9n9NDba1IPTLWBzlw11CM4eFIIZrTWheCKuACrrNAGDLDSMtDIKwsOWuGY8Z1DCODerGR8Mqbprx%2BSGLQ%3D%3D&trade_no=2019080722001421571000030866&auth_app_id=2016100900646609&version=1.0&app_id=2016100900646609&sign_type=RSA2&seller_id=2088102178762103&timestamp=2019-08-07+16%3A31%3A37"
+    return_url = "http://xx.ip.ip.xx:8000/?charset=utf-8&out_trade_no=2019080716060003&method=alipay.trade.page.pay.return&total_amount=0.01&sign=Ej1B3IHs4q6aaWXLqwphXelaPcrok%2Ft7FPmFwns368fc6LcDfvLgBFAqsVwryWMJmHddwiiGgDDSkJKl0f30dYyS0mh9HXlbAXacUJgHHRUvsrN9BiJ9GBoLf%2FInKXcC6n7bqkSDORW1Rnn2N1354NieHVW9W67dNhHCN%2FnpVzALX2c%2F5g7z06i1aYIdLVDfUsXVzn2fDGhZ%2BAHYoFoDKMTr0kFuPGSNPnt8%2F0Q75je8%2BbWmF%2BXMOm1152wVHUMyL1LEO9n9NDba1IPTLWBzlw11CM4eFIIZrTWheCKuACrrNAGDLDSMtDIKwsOWuGY8Z1DCODerGR8Mqbprx%2BSGLQ%3D%3D&trade_no=2019080722001421571000030866&auth_app_id=2016100900646609&version=1.0&app_id=2016100900646609&sign_type=RSA2&seller_id=2088102178762103&timestamp=2019-08-07+16%3A31%3A37"
 
     # 根据返回的链接，测试验证签名
     o = urlparse(return_url)
