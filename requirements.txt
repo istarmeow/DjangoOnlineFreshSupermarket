@@ -2,7 +2,7 @@ social-auth-app-django
 django-redis
 drf-extensions
 pycryptodome
-certifi==2019.3.9
+certifi==2022.12.7
 chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
